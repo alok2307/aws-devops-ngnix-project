@@ -20,6 +20,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 echo 'Source code checked out from GitHub'
@@ -83,16 +84,68 @@ pipeline {
     }
 
     post {
+
         always {
             echo 'Pipeline execution completed'
         }
 
         success {
             echo 'SUCCESS: Website deployment completed!'
+
+            emailext(
+                subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+
+                body: """
+Hello,
+
+Jenkins Pipeline completed successfully.
+
+Application: ${env.APP_NAME}
+Job: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+Environment: ${env.DEPLOY_ENV}
+
+Deployment Status: SUCCESS
+Website Status: HTTP 200 OK
+
+Build URL: ${env.BUILD_URL}
+
+Regards,
+Jenkins DevOps Pipeline
+""",
+
+                to: "YOUR_GMAIL@gmail.com"
+            )
         }
 
         failure {
             echo 'FAILURE: Please check Jenkins Console Output!'
+
+            emailext(
+                subject: "FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+
+                body: """
+Hello,
+
+Jenkins Pipeline execution failed.
+
+Application: ${env.APP_NAME}
+Job: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+Environment: ${env.DEPLOY_ENV}
+
+Deployment Status: FAILURE
+
+Please check Jenkins Console Output.
+
+Build URL: ${env.BUILD_URL}
+
+Regards,
+Jenkins DevOps Pipeline
+""",
+
+                to: "YOUR_GMAIL@gmail.com"
+            )
         }
     }
 }
