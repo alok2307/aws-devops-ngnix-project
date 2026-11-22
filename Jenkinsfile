@@ -32,11 +32,29 @@ pipeline {
                     try {
                         echo "Application: ${env.APP_NAME}"
                         echo "Selected Environment: ${env.DEPLOY_ENV}"
+
+                        withCredentials([
+                            string(
+                                credentialsId: 'alok2307',
+                                variable: 'GITHUB_TOKEN'
+                            )
+                        ]) {
+                            sh '''
+                                if [ -n "$GITHUB_TOKEN" ]; then
+                                    echo "GitHub credential loaded successfully"
+                                else
+                                    echo "Credential not found"
+                                    exit 1
+                                fi
+                            '''
+                        }
+
                         echo 'Starting build validation'
 
                         sh 'test -f index.html'
 
                         echo 'Build validation successful'
+
                     } catch (Exception e) {
                         echo "Build error detected: ${e.getMessage()}"
                         throw e
@@ -50,6 +68,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo "Deploying to ${env.DEPLOY_ENV}"
+
                 sh 'sudo /opt/jenkins-deploy/deploy.sh'
             }
         }
@@ -57,6 +76,7 @@ pipeline {
         stage('Verify') {
             steps {
                 sh 'curl -f -I http://localhost'
+
                 echo 'Deployment verification successful'
             }
         }
@@ -66,9 +86,11 @@ pipeline {
         always {
             echo 'Pipeline execution completed'
         }
+
         success {
             echo 'SUCCESS: Website deployment completed!'
         }
+
         failure {
             echo 'FAILURE: Please check Jenkins Console Output!'
         }
