@@ -1,17 +1,19 @@
 
 pipeline {
-	agent any
-	parameters {
-	    choice(
-	        name: 'ENVIRONMENT',
-        	choices: ['dev', 'prod'],
-	        description: 'Select deployment environment'
-    		)
-	}
-	environment {
-	    APP_NAME = 'aws-nginx-project'
-	    DEPLOY_ENV = "${params.ENVIRONMENT}"
-	}
+    agent any
+
+    parameters {
+        choice(
+            name: 'ENVIRONMENT',
+            choices: ['dev', 'prod'],
+            description: 'Select deployment environment'
+        )
+    }
+
+    environment {
+        APP_NAME = 'aws-nginx-project'
+        DEPLOY_ENV = "${params.ENVIRONMENT}"
+    }
 
     options {
         timeout(time: 5, unit: 'MINUTES')
@@ -25,13 +27,15 @@ pipeline {
         }
 
         stage('Build') {
-			echo "Application: ${APP_NAME}"
-			echo "Selected Environment: ${DEPLOY_ENV}"
-			echo 'Starting build validation'
+            steps {
                 script {
                     try {
+                        echo "Application: ${env.APP_NAME}"
+                        echo "Selected Environment: ${env.DEPLOY_ENV}"
                         echo 'Starting build validation'
+
                         sh 'test -f index.html'
+
                         echo 'Build validation successful'
                     } catch (Exception e) {
                         echo "Build error detected: ${e.getMessage()}"
@@ -45,7 +49,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Deploying website to Nginx'
+                echo "Deploying to ${env.DEPLOY_ENV}"
                 sh 'sudo /opt/jenkins-deploy/deploy.sh'
             }
         }
