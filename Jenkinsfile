@@ -1,6 +1,17 @@
 
 pipeline {
-    agent any
+	agent any
+	parameters {
+	    choice(
+	        name: 'ENVIRONMENT',
+        	choices: ['dev', 'prod'],
+	        description: 'Select deployment environment'
+    		)
+	}
+	environment {
+	    APP_NAME = 'aws-nginx-project'
+	    DEPLOY_ENV = "${params.ENVIRONMENT}"
+	}
 
     options {
         timeout(time: 5, unit: 'MINUTES')
@@ -14,7 +25,9 @@ pipeline {
         }
 
         stage('Build') {
-            steps {
+			echo "Application: ${APP_NAME}"
+			echo "Selected Environment: ${DEPLOY_ENV}"
+			echo 'Starting build validation'
                 script {
                     try {
                         echo 'Starting build validation'
