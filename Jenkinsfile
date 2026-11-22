@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -8,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Source code is checked out from GitHub'
+                echo 'Source code checked out from GitHub'
             }
         }
 
@@ -35,4 +36,19 @@ pipeline {
             }
         }
     }
+
+    post {
+        always {
+            echo 'Pipeline execution completed'
+        }
+
+        success {
+            echo 'SUCCESS: Website deployment completed!'
+        }
+
+        failure {
+            echo 'FAILURE: Please check Jenkins Console Output!'
+        }
+    }
 }
+
