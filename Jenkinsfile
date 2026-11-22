@@ -114,7 +114,7 @@ Regards,
 Jenkins DevOps Pipeline
 """,
 
-                to: "kumaralokbkgmail.com"
+                to: "kumaralokbk@gmail.com"
             )
         }
 
