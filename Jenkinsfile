@@ -18,7 +18,7 @@ pipeline {
                 script {
                     try {
                         echo 'Starting build validation'
-                        sh 'test -f index.html'
+                        sh 'test -f missing.html'
                         echo 'Build validation successful'
                     } catch (Exception e) {
                         echo "Build error detected: ${e.getMessage()}"
