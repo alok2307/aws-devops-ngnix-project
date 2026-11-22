@@ -15,10 +15,18 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo 'Building website project'
-                sh 'ls -l'
-                sh 'test -f index.html'
-                echo 'Build validation successful'
+                script {
+                    try {
+                        echo 'Starting build validation'
+                        sh 'test -f index.html'
+                        echo 'Build validation successful'
+                    } catch (Exception e) {
+                        echo "Build error detected: ${e.getMessage()}"
+                        throw e
+                    } finally {
+                        echo 'Build stage execution completed'
+                    }
+                }
             }
         }
 
@@ -41,11 +49,9 @@ pipeline {
         always {
             echo 'Pipeline execution completed'
         }
-
         success {
             echo 'SUCCESS: Website deployment completed!'
         }
-
         failure {
             echo 'FAILURE: Please check Jenkins Console Output!'
         }
